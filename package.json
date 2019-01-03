@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-      "build": "webpack --progress",
-      "watch": "npm run build -- --watch"
+    "build": "webpack --progress",
+    "watch": "npm run build -- --watch",
+    "lint:fix": "prettier --write **/src/**.js"
   },
   "keywords": [],
   "author": "",

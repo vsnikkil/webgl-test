@@ -24,6 +24,7 @@ const programInfo = {
     program: shaderProgram,
     attribLocations: {
         vertexPosition: gl.getAttribLocation(shaderProgram, "aVertexPosition"),
+        vertexColor: gl.getAttribLocation(shaderProgram, "aVertexColor"),
     },
     uniformLocations: {
         projectionMatrix: gl.getUniformLocation(
@@ -37,4 +38,19 @@ const programInfo = {
     },
 };
 
-drawScene(gl, programInfo, initSquareBuffer(gl));
+const appIteration = (() => {
+    let prevTimestamp = 0;
+
+    return timestamp => {
+        drawScene(
+            gl,
+            programInfo,
+            initSquareBuffer(gl),
+            timestamp - prevTimestamp
+        );
+        prevTimestamp = timestamp;
+        requestAnimationFrame(appIteration);
+    };
+})();
+
+requestAnimationFrame(appIteration);

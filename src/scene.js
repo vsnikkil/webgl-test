@@ -1,6 +1,9 @@
 import { mat4 } from "gl-matrix";
 
-export default (gl, programInfo, buffers) => {
+let rotation = 0;
+export default (gl, programInfo, buffers, delta) => {
+    rotation += (delta / 1000) * Math.PI * 2;
+
     gl.clearColor(0, 0, 0, 1.0);
     gl.clearDepth(1.0);
     gl.enable(gl.DEPTH_TEST);
@@ -17,8 +20,8 @@ export default (gl, programInfo, buffers) => {
 
     mat4.perspective(projectionMatrix, fov, aspect, zNear, zFar);
     mat4.translate(modelViewMatrix, modelViewMatrix, [-0.0, 0.0, -6.0]);
+    mat4.rotate(modelViewMatrix, modelViewMatrix, rotation, [0, 0, 1.0]);
 
-    const numComponents = 2;
     const type = gl.FLOAT;
     const normalize = false;
     const stride = 0;
@@ -27,7 +30,7 @@ export default (gl, programInfo, buffers) => {
     gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
     gl.vertexAttribPointer(
         programInfo.attribLocations.vertexPosition,
-        numComponents,
+        2, // number of components in vector
         type,
         normalize,
         stride,
@@ -35,6 +38,19 @@ export default (gl, programInfo, buffers) => {
     );
 
     gl.enableVertexAttribArray(programInfo.attribLocations.vertexPosition);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffers.color);
+    gl.vertexAttribPointer(
+        programInfo.attribLocations.vertexColor,
+        4, // number of components in vector
+        type,
+        normalize,
+        stride,
+        offset
+    );
+
+    gl.enableVertexAttribArray(programInfo.attribLocations.vertexColor);
+
     gl.useProgram(programInfo.program);
 
     gl.uniformMatrix4fv(
