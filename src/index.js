@@ -1,7 +1,7 @@
 import vsSrc from "./shaders/vertexSimple";
 import fsSrc from "./shaders/fragmentSimple";
 import { initShaderProgram } from "./shaders/shaderUtils";
-import initSquareBuffer from "./square";
+import initSquareBuffer from "./cube";
 import drawScene from "./scene";
 
 const body = document.body;

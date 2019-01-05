@@ -2,7 +2,7 @@ import { mat4 } from "gl-matrix";
 
 let rotation = 0;
 export default (gl, programInfo, buffers, delta) => {
-    rotation += (delta / 1000) * Math.PI * 2;
+    rotation += ((delta / 1000) * Math.PI * 2) / 5;
 
     gl.clearColor(0, 0, 0, 1.0);
     gl.clearDepth(1.0);
@@ -19,8 +19,18 @@ export default (gl, programInfo, buffers, delta) => {
     const modelViewMatrix = mat4.create();
 
     mat4.perspective(projectionMatrix, fov, aspect, zNear, zFar);
-    mat4.translate(modelViewMatrix, modelViewMatrix, [-0.0, 0.0, -6.0]);
+    mat4.translate(modelViewMatrix, modelViewMatrix, [0, 0, -6.0]);
     mat4.rotate(modelViewMatrix, modelViewMatrix, rotation, [0, 0, 1.0]);
+    mat4.rotate(modelViewMatrix, modelViewMatrix, 0.7 * rotation, [
+        0,
+        1.0,
+        0.0,
+    ]);
+    mat4.rotate(modelViewMatrix, modelViewMatrix, 0.5 * rotation, [
+        1.0,
+        0.0,
+        0.0,
+    ]);
 
     const type = gl.FLOAT;
     const normalize = false;
@@ -30,7 +40,7 @@ export default (gl, programInfo, buffers, delta) => {
     gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
     gl.vertexAttribPointer(
         programInfo.attribLocations.vertexPosition,
-        2, // number of components in vector
+        buffers.numComponents,
         type,
         normalize,
         stride,
@@ -51,6 +61,8 @@ export default (gl, programInfo, buffers, delta) => {
 
     gl.enableVertexAttribArray(programInfo.attribLocations.vertexColor);
 
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.index);
+
     gl.useProgram(programInfo.program);
 
     gl.uniformMatrix4fv(
@@ -65,6 +77,7 @@ export default (gl, programInfo, buffers, delta) => {
         modelViewMatrix
     );
 
-    const vertexCount = 4;
-    gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
+    const vertexCount = 36;
+
+    gl.drawElements(gl.TRIANGLES, vertexCount, gl.UNSIGNED_SHORT, offset);
 };
